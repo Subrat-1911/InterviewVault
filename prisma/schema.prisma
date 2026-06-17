@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Job type ke liye fixed options
+enum OfferType {
+  FULL_TIME
+  INTERNSHIP
+}
+
+// Tera 1-Table logic Hero!
+enum PostStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// 🧠 TAB 2: The Retention (Interview Experiences)
+model InterviewExperience {
+  id                 String     @id @default(uuid())
+  
+  // Author Details
+  clerkUserId        String     // User ki pehchan Clerk se
+  authorName         String
+  rollNumber         String
+  batch              String
+  branch             String
+  cpi                Float
+
+  // Job Context
+  company            String
+  jobRole            String
+  offerType          OfferType
+  eligibleBranches   String[]
+  cpiCutoff          Float?
+
+  // Core Experience
+  totalRounds        Int
+  oaDetails          String     @db.Text
+  interviewProcess   String     @db.Text
+  interviewQuestions String     @db.Text
+
+  // Modifiers
+  isAnonymous        Boolean    @default(false)
+  status             PostStatus @default(PENDING) // By default approval ke liye ruka rahega
+
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+
+// 📊 TAB 1: The Hook (Placement Analytics)
+model PlacementAnalytics {
+  id                 String     @id @default(uuid())
+  collegeName        String
+  batchYear          String
+  
+  companyName        String
+  jobRole            String
+  offerType          OfferType
+  
+  // Package Details (Lakhs mein)
+  ctc                Float?
+  baseSalary         Float?
+  
+  eligibleBranches   String[]
+  
+  createdAt          DateTime   @default(now())
+}

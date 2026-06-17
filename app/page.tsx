@@ -9,6 +9,7 @@ import MidPageBanner from "./components/MidPageBanner";
 import FeaturesGrid from "./components/FeaturesGrid"; 
 import Footer from "./components/Footer";
 import { useUser } from "@clerk/nextjs";
+import UserSyncProvider from "./components/UserSyncProvider";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("insights");
@@ -16,6 +17,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* 🔄 2. Yeh yahan render hona zaroori hai taaki background pipeline chalu ho sake */}
+      <UserSyncProvider />
       <Navbar />
       <main className="flex flex-col items-center px-4 w-full pt-24">
         {/* HERO ASSEMBLY */}
@@ -25,8 +28,8 @@ export default function Home() {
           <DataSection activeTab={activeTab} />
         </div>
         
-        {/* FEATURES GRID SECTION - Hero ke theek niche */}
-        {<FeaturesGrid />}
+        {/* CONDITIONAL FEATURE GRID (Sirf active tab ke basis par check hoga) */}
+        {activeTab === "insights" && <FeaturesGrid />}
         {/* 2. THE PERFECT MIDDLE BANNER */}
         {<MidPageBanner />}
       </main>

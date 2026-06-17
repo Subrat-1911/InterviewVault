@@ -2,7 +2,7 @@
 import { useUser } from "@clerk/nextjs";
 
 export default function HeroSection() {
-  const { isSignedIn } = useUser();
+  //const { isSignedIn } = useUser();
 
   // Agar user logged in hai, toh heading hide ho jayegi
   //if (isSignedIn) return null;

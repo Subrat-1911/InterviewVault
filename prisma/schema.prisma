@@ -7,67 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Job type ke liye fixed options
-enum OfferType {
-  FULL_TIME
-  INTERNSHIP
+// ==========================================
+// 🔒 TABLE 1: USER AUTH DATA
+// ==========================================
+model User {
+  id           String   @id @default(uuid())
+  clerkUserId  String   @unique // Clerk ID save karne ke liye
+  email        String   @unique // User ka email
+  name         String?  // Optional name
+  createdAt    DateTime @default(now())
 }
 
-// Tera 1-Table logic Hero!
-enum PostStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
 
-// 🧠 TAB 2: The Retention (Interview Experiences)
-model InterviewExperience {
-  id                 String     @id @default(uuid())
+
+// 🏢 ONLY TABLE 2: COMPANY MASTER DETAILS
+model Company {
+  id               String   @id // e.g., "amazon", "google", "graviton" (lowercase URL slugs)
+  name             String   // Real Display Name e.g., "Amazon India"
+  sector           String   // e.g., "Software", "Quant", "Core"
   
-  // Author Details
-  clerkUserId        String     // User ki pehchan Clerk se
-  authorName         String
-  rollNumber         String
-  batch              String
-  branch             String
-  cpi                Float
-
-  // Job Context
-  company            String
-  jobRole            String
-  offerType          OfferType
-  eligibleBranches   String[]
-  cpiCutoff          Float?
-
-  // Core Experience
-  totalRounds        Int
-  oaDetails          String     @db.Text
-  interviewProcess   String     @db.Text
-  interviewQuestions String     @db.Text
-
-  // Modifiers
-  isAnonymous        Boolean    @default(false)
-  status             PostStatus @default(PENDING) // By default approval ke liye ruka rahega
-
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
-}
-
-// 📊 TAB 1: The Hook (Placement Analytics)
-model PlacementAnalytics {
-  id                 String     @id @default(uuid())
-  collegeName        String
-  batchYear          String
+  // Placement Metrics
+  grossCtc         String   // e.g., "34.0 LPA"
+  cpiCutoff        Float    @default(0.0) // e.g., 7.50
+  allowedBranches  String[] // Array format: ["CSE", "EE", "EP"]
+  allowedDegrees   String[] // Array format: ["B.Tech", "DD"]
   
-  companyName        String
-  jobRole            String
-  offerType          OfferType
-  
-  // Package Details (Lakhs mein)
-  ctc                Float?
-  baseSalary         Float?
-  
-  eligibleBranches   String[]
-  
-  createdAt          DateTime   @default(now())
+  // Round & Process Specs
+  testPlatform     String   // e.g., "HackerRank"
+  testPattern      String   // e.g., "2 Coding Questions + 15 Aptitude MCQs"
+  interviewRounds  String   // e.g., "3 Technical Rounds (DSA) + 1 HR"
+
+  createdAt        DateTime @default(now())
 }

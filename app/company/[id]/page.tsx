@@ -11,11 +11,27 @@ interface CompanyPageProps {
 
 export default async function CompanyDetailPage({ params }: CompanyPageProps) {
   const { id } = await params;
+if (!id) {
+    notFound();
+  }
 
-  // 🚀 Table 2 se direct single-query mein data fetch karo (No complex includes!)
-  const company = await (db as any).company.findUnique({
+  // 1️⃣ Pehle exact ID matching se dhoondega (Case-sensitive primary key)
+  let company = await (db as any).company.findUnique({
     where: { id },
   });
+
+  // 2️⃣ 🕵️‍♂️ Case-Sensitivity Bypass: Agar pehli baar mein nahi mila, toh flexible checking karega
+  if (!company) {
+    company = await (db as any).company.findFirst({
+      where: {
+        OR: [
+          { id: id.toLowerCase() },
+          { id: id.toUpperCase() },
+          { name: { equals: id, mode: 'insensitive' } } // DB characters match filtering
+        ]
+      }
+    });
+  }
 
   // Agar database mein company nahi milti toh direct 404 page dikhao
   if (!company) {

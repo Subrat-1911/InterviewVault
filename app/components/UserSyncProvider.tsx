@@ -1,32 +1,33 @@
-// app/components/UserSyncProvider.tsx
-"use client";
+"use client"
 
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { handleUserSync } from "../actions/sync";
+// ✅ Relative path se directly connect kiya
+import { syncUserToDatabase } from "../actions/sync";
+
 export default function UserSyncProvider() {
-  const { isSignedIn, user } = useUser();
-  // 👈 Yeh temporary log add karo dekhne ke liye ki component render hua ya nahi
-  console.log("🔍 Provider Status:", { isSignedIn, hasUser: !!user });
+  const { isLoaded, isSignedIn, user } = useUser();
 
   useEffect(() => {
-    if (isSignedIn && user) {
-      const clerkUserId = user.id;
-      const email = user.primaryEmailAddress?.emailAddress;
-      const name = user.fullName;
+    async function sync() {
+      if (isLoaded && isSignedIn && user) {
+        const fullName = user.firstName 
+          ? `${user.firstName} ${user.lastName || ""}`.trim() 
+          : "Anonymous User";
+        
+        const email = user.emailAddresses[0]?.emailAddress;
 
-      if (email) {
-        handleUserSync({ clerkUserId, email, name })
-          .then((res: { success: boolean }) => {
-            if (res.success) {
-              console.log("🔥 Table 1: User synced safely via Provider!");
-            }
-          })
-          .catch((err: unknown) => console.error("Sync trigger fail:", err));
+        try {
+          // ✅ Direct values pass karien bagair curly braces object ke, kyunki sync.ts flat string maang raha hai
+          await syncUserToDatabase(user.id, email, fullName);
+          console.log("🎯 User successfully synced with Name and Role!");
+        } catch (err) {
+          console.log("❌ Synchronization triggered failure:", err);
+        }
       }
     }
-  }, [isSignedIn, user]);
+    sync();
+  }, [isLoaded, isSignedIn, user]);
 
-  // Yeh component screen par kuch dikhayega nahi, bas background mein kaam karega
-  return null; 
+  return null;
 }

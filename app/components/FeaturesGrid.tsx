@@ -29,19 +29,19 @@ export default function FeaturesGrid() {
             </p>
           </div>
         </Link>
+        
+        {/* 🚀 Card 2: Coming Soon Feature Card */}
+        <div className="h-full border border-gray-800 border-dashed rounded-2xl bg-gray-900/10 p-8 opacity-50 flex flex-col justify-center items-center text-center select-none">
+          <div className="text-gray-600 text-4xl mb-4">🚀</div>
+          <h3 className="text-2xl font-bold text-gray-500 mb-3">
+            Alumni Track
+          </h3>
+          <p className="text-gray-600 text-sm leading-relaxed max-w-xs">
+            Direct sync pipelines mapping active alumni networks inside target recruiters. Coming Soon!
+          </p>
+        </div>
 
-        {/* Card 2: Branch-Specific Eligibility */}
-        <Link href="/branch-eligibility" className="group">
-          <div className="h-full border border-gray-800 rounded-2xl bg-gray-900/40 p-8 hover:-translate-y-2 hover:border-yellow-500 transition-all duration-300 cursor-pointer">
-            <div className="text-yellow-500 text-4xl mb-4">🎯</div>
-            <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-yellow-500 transition-colors">
-              Branch Eligibility
-            </h3>
-            <p className="text-gray-400 leading-relaxed">
-              Don't waste time on companies not hiring your branch. Filter strictly by CS, EE, EP, and CPI cutoffs.
-            </p>
-          </div>
-        </Link>
+       
 
         {/* Card 3: All Companies Directory */}
         <Link href="/companies" className="group">

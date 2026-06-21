@@ -5,15 +5,19 @@ import Link from 'next/link';
 
 export default function BranchwiseSection() {
   return (
-    <div className="max-w-6xl w-full mt-12 mb-24 px-4">
+    <div className="max-w-6xl w-full mt-6 mb-24 px-4">
       
-      {/* 1️⃣ CENTERED HEADER CONTROLS */}
-      {/* 🚀 FIXED: Isme mb-8 ko hata kar mb-16 kar diya hai taaki neeche ke 3 boxes se distance badh jaye */}
-      <div className="border border-gray-800 rounded-2xl bg-gray-900/20 p-8 mb-16 text-center flex flex-col items-center justify-center">
-        <h2 className="text-2xl md:text-3xl font-extrabold tracking-wide text-white mb-2">
+      {/* 1️⃣ CENTERED HEADER CONTROLS (UNIFIED PREMIUM LOOK) */}
+      <div className="w-full border border-zinc-800/80 bg-zinc-900/20 rounded-2xl p-6 md:p-8 text-center mb-14 shadow-xl relative overflow-hidden backdrop-blur-xs">
+        
+        {/* Subtle Cyber Yellow Accent Line on top edge to match FeaturesGrid */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-[2px] bg-gradient-to-r from-transparent via-yellow-500 to-transparent" />
+        
+        <h2 className="text-3xl md:text-4xl font-black tracking-wide text-white mb-3">
           ⚡ Departmentwise Analytics Dashboard
         </h2>
-        <p className="text-gray-400 text-sm max-w-xl">
+        
+        <p className="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
           Segmented data insights from insti databases and official macro reports over the years.
         </p>
       </div>
@@ -22,8 +26,12 @@ export default function BranchwiseSection() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Card 1: Branch Eligibility */}
+        {/* Card 1: Branch Eligibility */}
+        {/* Card 1: Branch Eligibility */}
+        {/* Card 1: Branch Eligibility */}
         <Link href="/branch-eligibility" className="group block">
-          <div className="h-full border border-gray-800 rounded-2xl bg-gray-900/40 p-8 hover:-translate-y-2 hover:border-yellow-500 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+          {/* 🚀 FIXED: Ab border, bg, aur blur level 100% exact tumhaare header box jaisa copy ho gaya hai */}
+          <div className="h-full border border-zinc-800/80 rounded-2xl bg-zinc-900/20 backdrop-blur-xs p-8 hover:-translate-y-2 hover:border-yellow-500 transition-all duration-300 cursor-pointer flex flex-col justify-between shadow-xl">
             <div>
               <div className="text-yellow-500 text-4xl mb-4">🎯</div>
               <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-yellow-500 transition-colors">
@@ -40,8 +48,10 @@ export default function BranchwiseSection() {
         </Link>
 
         {/* 🚀 Card 2: Branch-Wise Placement Stats */}
+       {/* Card 2: Placement Metrics */}
         <Link href="/department-placement-reports" className="group block">
-          <div className="h-full border border-gray-800 rounded-2xl bg-gray-900/40 p-8 hover:-translate-y-2 hover:border-yellow-500 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+          {/* 🚀 FIXED: Background ko bg-zinc-900/20, border ko border-zinc-800/80 aur light blur backdrop-blur-xs kar diya hai */}
+          <div className="h-full border border-zinc-800/80 rounded-2xl bg-zinc-900/20 backdrop-blur-xs p-8 hover:-translate-y-2 hover:border-yellow-500 transition-all duration-300 cursor-pointer flex flex-col justify-between shadow-xl">
             <div>
               <div className="text-yellow-500 text-4xl mb-4">📈</div>
               <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-yellow-500 transition-colors">

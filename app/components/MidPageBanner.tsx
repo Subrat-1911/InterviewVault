@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 
 export default function MidPageBanner() {
-  // 📸 STRICT 5-IMAGES ARRAY MATRIX (IITB Campus Assets)
   const bgImages = [
     "/images/iitb1.jpg",
     "/images/iitb2.jpg",
@@ -14,7 +13,6 @@ export default function MidPageBanner() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // ⏳ Dynamic Interval Tick (Changes every 4 seconds)
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % bgImages.length);
@@ -24,11 +22,12 @@ export default function MidPageBanner() {
   }, [bgImages.length]);
 
   return (
-    <div className="w-full max-w-5xl my-12 px-2 select-none">
-      {/* 🚀 FIXED: Height ko h-[320px] md:h-[290px] kiya hai jo ki perfectly balanced hai (pehle se thoda bada, par zyada bada nahi) */}
-      <div className="relative w-full rounded-3xl overflow-hidden border border-zinc-850 bg-zinc-950 h-[320px] md:h-[290px] flex items-center justify-center shadow-2xl">
+    <div className="w-full mt-20 mb-0 select-none">
+      
+      {/* 🚀 FIXED: shadow-2xl hata kar shadow-sm ya completely flat transparent borders control lagaya hai */}
+      <div className="relative w-full bg-zinc-950 h-[320px] md:h-[290px] flex items-center justify-center shadow-sm">
         
-        {/* 🚀 LAYER 1: UNIFORM AUTOMATED IMAGE SLIDER ENGINE */}
+        {/* LAYER 1: AUTOMATED IMAGE SLIDER ENGINE */}
         {bgImages.map((image, index) => (
           <div
             key={index}
@@ -39,16 +38,12 @@ export default function MidPageBanner() {
           />
         ))}
 
-        {/* 🚀 LAYER 2: LIGHTING REFLECTION MASK */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/45 z-10" />
+        {/* LAYER 2: LIGHTING REFLECTION MASK
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/45 z-10" /> */}
 
-        {/* 🚀 LAYER 3: CORE CONTENT COMPONENT */}
+        {/* LAYER 3: CORE CONTENT COMPONENT */}
         <div className="relative z-20 text-center px-6 py-8 max-w-3xl mx-auto flex flex-col items-center justify-center h-full">
           
-          {/* <span className="text-[10px] font-mono font-bold tracking-widest bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded-full uppercase mb-4 shadow-md">
-            IIT Bombay Exclusive
-          </span> */}
-
           <p className="text-sm md:text-base text-white font-bold leading-relaxed tracking-wide antialiased drop-shadow-[0_4px_6px_rgba(0,0,0,0.95)]">
             Built independently to eliminate official PR filters and campus rumors. This 
             platform bridges the information gap, delivering pure, unedited placement insights 
@@ -61,7 +56,7 @@ export default function MidPageBanner() {
 
         </div>
 
-        {/* 🚀 LAYER 4: CAROUSEL DOTS INDICATORS */}
+        {/* LAYER 4: CAROUSEL DOTS INDICATORS */}
         <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2 z-30">
           {bgImages.map((_, idx) => (
             <div

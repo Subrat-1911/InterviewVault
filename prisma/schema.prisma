@@ -8,36 +8,110 @@ datasource db {
 }
 
 // ==========================================
-// 🔒 TABLE 1: USER AUTH DATA
+// 🔒 TABLE 1: USER AUTH DATA (Unchanged)
 // ==========================================
 model User {
   id          String   @id @default(uuid())
   clerkUserId String   @unique
   email       String   @unique
   name        String?
-  role        Int      @default(0) // 0 = Normal User, 1 = Contributor (.ac.in users)
+  role        Int      @default(0) // 0 = Normal User, 1 = Contributor
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-
-
-// 🏢 ONLY TABLE 2: COMPANY MASTER DETAILS
+// ==========================================
+// 🏢 TABLE 2: COMPANY MASTER DETAILS (Unchanged)
+// ==========================================
 model Company {
-  id               String   @id // e.g., "amazon", "google", "graviton" (lowercase URL slugs)
-  name             String   // Real Display Name e.g., "Amazon India"
-  sector           String   // e.g., "Software", "Quant", "Core"
-  
-  // Placement Metrics
-  grossCtc         String   // e.g., "34.0 LPA"
-  cpiCutoff        Float    @default(0.0) // e.g., 7.50
-  allowedBranches  String[] // Array format: ["CSE", "EE", "EP"]
-  allowedDegrees   String[] // Array format: ["B.Tech", "DD"]
-  
-  // Round & Process Specs
-  testPlatform     String   // e.g., "HackerRank"
-  testPattern      String   // e.g., "2 Coding Questions + 15 Aptitude MCQs"
-  interviewRounds  String   // e.g., "3 Technical Rounds (DSA) + 1 HR"
+  id              String   @id // e.g., "amazon"
+  name            String   
+  sector          String   
+  grossCtc        String   
+  cpiCutoff       Float?   // 🚀 FIXED: Optional Float (by default null rahega, syntax error nahi aayega)
+  allowedBranches String[] 
+  allowedDegrees  String[] 
+  testPlatform    String   // e.g., "HackerRank"
+  testPattern     String   // e.g., "3 Coding Questions, 90 mins"
+  selectionProcess String[] // Master Timeline Array: ["OA | ...", "Tech 1 | ..."]
+  createdAt       DateTime @default(now())
+}
 
-  createdAt        DateTime @default(now())
+// ==========================================
+// 🎓 NEW TABLE 3: INSTITUTION MASTER (Filter 1 & 2)
+// ==========================================
+model Institution {
+  id          String              @id @default(cuid())
+  name        String              @unique // e.g., "IIT Bombay", "NIT Trichy", "IIIT Hyderabad"
+  type        InstitutionType     // Filter 1 helper: Enum for IIT, NIT, IIIT, OTHER
+  slug        String              @unique // e.g., "iit-bombay" for routing
+  yearlyData  InstitutionYearData[]
+  createdAt   DateTime            @default(now())
+}
+
+enum InstitutionType {
+  IIT
+  NIT
+  IIIT
+  OTHER
+}
+
+// ==========================================
+// 📅 NEW TABLE 4: YEARLY NODE DATA (Filter 4)
+// ==========================================
+model InstitutionYearData {
+  id            String              @id @default(cuid())
+  institutionId String
+  institution   Institution         @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  academicYear  String              // Filter 4 helper: e.g., "2023-24", "2024-25"
+  
+  // Relations to charts and stats (Everything loads together)
+  branchStats   BranchPlacementStat[]
+  sectorStats   SectorStat[]
+  salaryStats   SalaryRangeStat[]
+
+  @@unique([institutionId, academicYear]) // Ek college ka ek saal ka ek hi master record hoga
+}
+
+// ==========================================
+// 🌿 NEW TABLE 5: BRANCH METRICS (Filter 3 - Supports "Overall")
+// ==========================================
+model BranchPlacementStat {
+  id            String              @id @default(cuid())
+  yearDataId    String
+  yearData      InstitutionYearData @relation(fields: [yearDataId], references: [id], onDelete: Cascade)
+  
+  // 🎯 CRITICAL: branch ka naam "Overall" hoga aggregate data ke liye, baaki normal "CSE", "EE", "EP"
+  branch        String              // Filter 3 helper: "CSE", "EE", "EP", "Overall"
+  program       String              @default("All") // "B.Tech", "M.Tech", "All"
+  
+  registered    Int
+  participated  Int
+  placed        Int
+  percentage    Float               // e.g., 90.55
+  highestCtc    Float?              // Optional: Highest CTC in this branch
+  averageCtc    Float?              // Optional: Average CTC in this branch
+}
+
+// ==========================================
+// 📊 NEW TABLE 6: SECTOR WISE (For Pie Charts)
+// ==========================================
+model SectorStat {
+  id            String              @id @default(cuid())
+  yearDataId    String
+  yearData      InstitutionYearData @relation(fields: [yearDataId], references: [id], onDelete: Cascade)
+  sector        String              // "IT/Software", "Consulting", "Finance", "Core"
+  selections    Int
+  companiesCount Int
+}
+
+// ==========================================
+// 💰 NEW TABLE 7: SALARY RANGES (For Bar Charts)
+// ==========================================
+model SalaryRangeStat {
+  id            String              @id @default(cuid())
+  yearDataId    String
+  yearData      InstitutionYearData @relation(fields: [yearDataId], references: [id], onDelete: Cascade)
+  range         String              // "Above 20 LPA", "15-20 LPA", "10-15 LPA"
+  offers        Int
 }

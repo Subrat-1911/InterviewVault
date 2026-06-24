@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion"; 
+import { motion, AnimatePresence, type Variants } from "framer-motion"; 
 
 // 🔌 CUSTOM RESOLVED COMPONENT IMPORTS (New Names Applied 🚀)
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection"; 
 import Tabs from "./components/Tabs";
-import PlacementInsights from "./components/PlacementInsights"; // Fixed Name
-import InterviewArchives from "./components/InterviewArchives"; // Fixed Name
+import PlacementInsights from "./components/PlacementInsights"; 
+import InterviewArchives from "./components/InterviewArchives"; 
 
 // 🎬 MOTION PRESETS IMPORT
 import { 

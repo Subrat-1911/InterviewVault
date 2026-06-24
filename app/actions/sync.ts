@@ -2,6 +2,9 @@
 
 import { db } from "@/lib/db";
 
+// ==========================================
+// 🔒 EXISTING: USER AUTH SYNC PIPELINE
+// ==========================================
 export async function syncUserToDatabase(clerkUserId: string, email: string, name: string | null) {
   try {
     // 🕵️‍♂️ Dynamic Role Verification Logic
@@ -31,8 +34,56 @@ export async function syncUserToDatabase(clerkUserId: string, email: string, nam
     });
 
   } catch (error) {
-    // ✅ print() ki jagah console.error() kiya taaki crash na ho
     console.error("❌ Backend User Sync Error:", error);
     throw new Error("Failed to sync user data");
+  }
+}
+
+// ==========================================
+// 🎓 NEW: FILTER METADATA FETCH (Filter 1 & 2 Cascade)
+// ==========================================
+export async function getFilterMetadata() {
+  try {
+    const institutions = await (db as any).institution.findMany({
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        slug: true,
+        yearlyData: {
+          select: {
+            academicYear: true,
+          },
+        },
+      },
+    });
+    return institutions;
+  } catch (error) {
+    console.error("❌ Error fetching filter metadata:", error);
+    return [];
+  }
+}
+
+// ==========================================
+// 📊 NEW: DASHBOARD DATA FETCH (Charts & Metrics Engine)
+// ==========================================
+export async function getInstitutionDashboardData(slug: string, year: string) {
+  try {
+    const yearData = await (db as any).institutionYearData.findFirst({
+      where: {
+        institution: { slug: slug },
+        academicYear: year,
+      },
+      include: {
+        branchStats: true,
+        sectorStats: true,
+        salaryStats: true,
+      },
+    });
+
+    return yearData;
+  } catch (error) {
+    console.error("❌ Error fetching dashboard data:", error);
+    return null;
   }
 }

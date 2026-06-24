@@ -1,9 +1,9 @@
-// app/company/[id]/page.tsx
 import { db } from "../../../lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import EvaluationCard from "./components/EvaluationCard";
 
 interface CompanyPageProps {
   params: Promise<{ id: string }>;
@@ -11,32 +11,42 @@ interface CompanyPageProps {
 
 export default async function CompanyDetailPage({ params }: CompanyPageProps) {
   const { id } = await params;
-if (!id) {
+  if (!id) {
     notFound();
   }
 
-  // 1️⃣ Pehle exact ID matching se dhoondega (Case-sensitive primary key)
+  // 🛰️ DB Fetching from Neon serverless client instance
   let company = await (db as any).company.findUnique({
     where: { id },
   });
 
-  // 2️⃣ 🕵️‍♂️ Case-Sensitivity Bypass: Agar pehli baar mein nahi mila, toh flexible checking karega
   if (!company) {
     company = await (db as any).company.findFirst({
       where: {
         OR: [
           { id: id.toLowerCase() },
           { id: id.toUpperCase() },
-          { name: { equals: id, mode: 'insensitive' } } // DB characters match filtering
+          { name: { equals: id, mode: 'insensitive' } }
         ]
       }
     });
   }
 
-  // Agar database mein company nahi milti toh direct 404 page dikhao
   if (!company) {
     notFound();
   }
+
+  // Pure clean parsing of database properties to bypass hydration mismatch issues
+  const safeCompany = {
+    id: company.id,
+    name: company.name,
+    sector: company.sector,
+    grossCtc: company.grossCtc,
+    cpiCutoff: company.cpiCutoff,
+    testPlatform: company.testPlatform,
+    testPattern: company.testPattern,
+    selectionProcess: company.selectionProcess || [] // 🚀 Ensuring clean array delivery
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
@@ -47,10 +57,10 @@ if (!id) {
         {/* HEADER BLOCK */}
         <div className="border border-gray-800 rounded-2xl bg-gradient-to-b from-gray-900/40 to-transparent p-8 md:p-12 mb-8">
           <span className="text-yellow-500 font-mono text-xs tracking-widest bg-yellow-500/10 px-3 py-1 rounded-full uppercase mb-4 inline-block">
-            {company.sector} Domain
+            {safeCompany.sector} Domain
           </span>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-3">
-            {company.name}
+            {safeCompany.name}
           </h1>
           <p className="text-gray-400 text-sm md:text-base max-w-2xl font-light">
             Verified recruitment statistics, baseline package info, and criteria directly mapped from the insti placement portal records.
@@ -60,7 +70,7 @@ if (!id) {
         {/* 3-COLUMN METRICS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           
-          {/* 1. SALARY VAULT - WITH DIRECT BREAKDOWN LINK TO TRANSPARENT CTC */}
+          {/* 1. COMPENSATION VAULT */}
           <div className="border border-gray-800 bg-neutral-950/40 p-6 rounded-2xl flex flex-col justify-between">
             <div>
               <h3 className="text-xs font-semibold tracking-wider text-gray-500 font-mono uppercase mb-4">
@@ -68,7 +78,7 @@ if (!id) {
               </h3>
               <div className="space-y-1">
                 <p className="text-xs text-gray-500">Gross CTC</p>
-                <p className="text-3xl font-black text-yellow-500 tracking-tight">{company.grossCtc}</p>
+                <p className="text-3xl font-black text-yellow-500 tracking-tight">{safeCompany.grossCtc}</p>
               </div>
               <p className="text-xs text-gray-500 mt-3 font-light leading-relaxed">
                 Base salary, variable bonuses, and stock vesting allocations are hidden here for platform synergy.
@@ -85,7 +95,7 @@ if (!id) {
             </div>
           </div>
 
-          {/* 2. ELIGIBILITY MATRIX - LINK TO BRANCH ELIGIBILITY */}
+          {/* 2. ELIGIBILITY MATRIX */}
           <div className="border border-gray-800 bg-neutral-950/40 p-6 rounded-2xl flex flex-col justify-between">
             <div>
               <h3 className="text-xs font-semibold tracking-wider text-gray-500 font-mono uppercase mb-4">
@@ -93,7 +103,11 @@ if (!id) {
               </h3>
               <div className="space-y-1">
                 <p className="text-xs text-gray-500">Minimum CPI Cutoff</p>
-                <p className="text-3xl font-black text-white tracking-tight">{company.cpiCutoff.toFixed(2)}</p>
+                <p className="text-3xl font-black text-white tracking-tight">
+                  {safeCompany.cpiCutoff !== null && safeCompany.cpiCutoff !== undefined 
+                    ? safeCompany.cpiCutoff.toFixed(2) 
+                    : "N/A"}
+                </p>
               </div>
               <p className="text-xs text-gray-500 mt-3 font-light leading-relaxed">
                 Branch specific constraints and special degree slot restrictions apply to this company's JAF.
@@ -110,26 +124,8 @@ if (!id) {
             </div>
           </div>
 
-          {/* 3. RECRUITMENT TIMELINE (EVALUATION FORMAT) */}
-          <div className="border border-gray-800 bg-neutral-950/40 p-6 rounded-2xl flex flex-col justify-between">
-            <div>
-              <h3 className="text-xs font-semibold tracking-wider text-gray-500 font-mono uppercase mb-4">
-                📝 Evaluation Format
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-xs text-gray-500">Test Platform</p>
-                  <p className="text-sm font-bold text-white">{company.testPlatform}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500">Assessment Setup</p>
-                  <p className="text-xs text-gray-400 font-light leading-relaxed">
-                    {company.testPattern}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* 3. RECRUITMENT TIMELINE COMPONENT (Supplying completely sanitized properties object) */}
+          <EvaluationCard company={safeCompany} />
 
         </div>
 
@@ -139,7 +135,7 @@ if (!id) {
             <h3 className="text-sm font-semibold tracking-wider text-gray-400 font-mono uppercase mb-1">
               📚 ARCHIVED INTERVIEW EXPERIENCES
             </h3>
-            <p className="text-xs text-gray-500 font-mono mb-2">Structure: {company.interviewRounds}</p>
+            <p className="text-xs text-gray-500 font-mono mb-2">Structure: {safeCompany.selectionProcess.length > 0 ? `${safeCompany.selectionProcess.length} Stage Filter Flow` : "Standard Matrix Rounds"}</p>
             <p className="text-sm text-gray-400 font-light max-w-2xl">
               Read real, unedited interview logs, exact technical questions asked, and preparation strategies shared by IITB seniors who cleared this company's process.
             </p>
